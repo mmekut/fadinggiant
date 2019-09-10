@@ -1,0 +1,65 @@
+---
+- name: Update yum cache and Install utility Packages
+  yum: 
+    name: "{{server.packages}}"
+    bugfix: yes
+    state: latest
+    update_cache: yes
+
+- name: Setting timezone
+  timezone:
+    name: "{{server.timezone}}"
+  
+
+- name: Set default locale
+  shell: localectl set-locale LANG={{server.locale}}
+
+
+# SElinux default policy 'targeted' prevents apache process
+# from serving files on vagrant-mounted folders.
+# Since this is a local development environment, security can be relaxed
+# for proper experimentation
+- name: Disable SElinux
+  selinux:
+    state: disabled
+    
+
+- name: Set the hostname
+  shell: hostname {{ server.hostname }}
+  when: server.hostname is defined
+
+- name: Update /etc/hosts
+  lineinfile: dest=/etc/hosts regexp='^127\.0\.0\.1' line='127.0.0.1 localhost {{ server.hostname }}' owner=root group=root mode=0644
+  
+- name: Set the hostname in /etc/hostname
+  shell: echo {{ server.hostname }} > /etc/hostname
+  when: server.hostname is defined
+  
+
+#- name: Check if cloudlinux repo is already configured.
+#  stat: path={{ cloudlinux_repofile }}
+#  register: cloudlinux_repofile_result
+  
+# Adds cloudlinux updates-testing repo if not exist  --- should be source repo
+#- name: Add cloudlinux updates-testing repo
+#  yum_repository:
+#    name: cloudlinux
+#    description: CloudLinux updates-testing repo for beta versions of Apache
+#    baseurl: "{{ cloudlinux_repo_url }}"
+#    gpgkey: "{{ cloudlinux_repo_gpg_key }}"
+#    gpgcheck: no
+#    enabled: no
+#    protect: yes
+#    includepkgs: [liblsapi, liblsapi-devel, httpd, httpd-devel, httpd-tools, mod_ssl, mod_lsapi]
+#    exclude: kernel*
+#  when: not cloudlinux_repofile_result.stat.exists
+  
+
+# Add Apache mod_lsapi libraries <---Needs to be compiled from source
+#- name: Install Apache lsapi libraries
+#  yum: 
+#    name: 
+#      - liblsapi
+#      - liblsapi-devel
+#    enablerepo: cloudlinux
+#    state: latest

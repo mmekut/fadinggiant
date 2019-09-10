@@ -1,0 +1,18 @@
+---
+#Roles from Ansible Galaxy
+- src: geerlingguy.repo-remi
+- src: geerlingguy.pip
+- src: geerlingguy.git
+- src: geerlingguy.nodejs
+- src: geerlingguy.mysql
+- src: geerlingguy.postgresql
+- src: geerlingguy.memcached
+- src: geerlingguy.redis
+- src: geerlingguy.apache
+- src: geerlingguy.php
+- src: geerlingguy.php-xdebug
+- src: geerlingguy.composer
+- src: geerlingguy.drush
+- src: geerlingguy.adminer
+- src: geerlingguy.security
+- src: geerlingguy.firewall

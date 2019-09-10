@@ -1,0 +1,111 @@
+---
+# Server Utilities
+server:
+    packages: [vim, htop, wget, iotop, curl, bash-completion, libselinux-python]
+    timezone: Africa/Lagos
+    locale: en_US.utf8
+    hostname: fadingGiant
+
+
+# pip packages for OpenSSL cert generation
+pip_install_packages:
+    - name: pyOpenSSL
+    - name: cryptography
+
+
+# Install git from source
+git_install_from_source: true
+git_install_from_source_force_update: true
+git_version: "2.21.0"
+
+# mysql role settings -- installs mariaDB on RedHat Family
+mysql_enablerepo: "epel"
+mysql_root_password: TOTALELFFINA
+mysql_databases:
+    - name: general
+mysql_users:
+    - name: general
+      host: "127.0.0.1"
+      password: mmekut2019
+      priv: "general.*:ALL"
+
+# postgresql role settings
+postgresql_enablerepo: "epel"
+postgresql_version: "9.6"
+postgresql_databases:
+    - name: general
+postgresql_users:
+    - name: mme
+      password: mmekut2019
+
+
+
+# LetsEncrypt doesn't generate cert for local private domains
+# So OpenSSL self-signed is used
+  
+  
+# apache role settings
+apache_enablerepo: "epel"
+apache_packages_state: latest
+apache_vhosts:
+  # Additional properties:
+  # 'serveradmin, serveralias, allow_override, options, extra_parameters'.
+  - servername: "fadinggiant.local"
+    documentroot: "/var/www/fading"
+    extra_parameters: |
+          RewriteCond %{HTTPS} off
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+apache_vhosts_ssl:
+# Additional properties:
+# 'serveradmin, serveralias, allow_override, options, extra_parameters'.
+  - servername: "fadinggiant.local"
+    documentroot: "/var/www/fading"
+    certificate_file: "/etc/ssl/fadinggiant/chain.crt"
+    certificate_key_file: "/etc/ssl/fadinggiant/private.pem"
+#   # Optional.
+#   certificate_chain_file: "/path/to/certificate_chain.crt"
+
+
+# php role settings
+php_enablerepo: "remi-php73"
+php_upload_max_filesize: "256M"
+php_post_max_size: "96M"
+php_date_timezone: "Africa/Lagos"
+php_display_errors: "On"
+php_packages_extra:
+        - php-intl
+        - php-json
+        - php-curl
+        - php-geoip
+        - php-memcached
+        - php-mysql
+        - php-pgsql
+        - php-openssl
+        - php-redis
+        - php-imagick
+        - php-exif
+        - php-yaml
+        - php-taint
+        - php-oauth
+        - php-litespeed #<--- LSAPI from remi-repo
+
+#adminer role settings
+adminer_install_dir: /var/www/adminer
+adminer_add_apache_config: true
+
+#Xdebug role settings
+php_xdebug_version: 2.7.1
+php_xdebug_remote_enable: "true"
+
+#composer variables
+composer_global_packages:
+    - { name: phpunit/phpunit, release: "8.*" }
+    
+#drush variables
+drush_launcher_install: false
+drush_composer_global_install: true
+
+#security role
+security_sudoers_passwordless:
+      - vagrant

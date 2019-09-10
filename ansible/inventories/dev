@@ -1,0 +1,2 @@
+[fadinggiant]
+centOS ansible_connection=local

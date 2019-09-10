@@ -1,0 +1,4 @@
+---
+cloudlinux_repo_url: "https://repo.cloudlinux.com/cloudlinux/7.6/updates-testing/$basearch/"
+cloudlinux_repo_gpg_key: "https://repo.cloudlinux.com/cloudlinux/7.6/updates-testing/$basearch/RPM-GPG-KEY-CloudLinux"
+cloudlinux_repofile: "/etc/yum.repos.d/cloudlinux.repo"

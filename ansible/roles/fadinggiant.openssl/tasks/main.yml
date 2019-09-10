@@ -1,0 +1,33 @@
+# Generate self-signed OpenSSL certificate 
+---
+- name: Ensure directory exists for local self-signed TLS certs
+  file:
+    path: /etc/ssl/{{ certificate.host }}
+    state: directory
+    mode: 0644
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: /etc/ssl/{{ certificate.host }}/private.pem
+
+- name: Generate an OpenSSL CSR
+  openssl_csr:
+    path: /etc/ssl/{{ certificate.host }}/{{ certificate.host }}.csr
+    privatekey_path: /etc/ssl/{{ certificate.host }}/private.pem
+    common_name: "{{ certificate.domain }}"
+    organization_name: OPEN MIND
+    country_name: NG
+    #ocsp_must_staple: yes
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: /etc/ssl/{{ certificate.host }}/chain.crt
+    privatekey_path: /etc/ssl/{{ certificate.host }}/private.pem
+    csr_path: /etc/ssl/{{ certificate.host }}/{{ certificate.host }}.csr
+    provider: selfsigned
+    selfsigned_not_after: "+365d"
+    
+- name: Generate Diffie-Hellman parameters with 2048 bits
+  openssl_dhparam:
+    path: /etc/ssl/{{ certificate.host }}/dhparams.pem
+    size: 2048
