@@ -14,8 +14,6 @@ pip_install_packages:
 
 
 # Install git from source
-git_install_from_source: true
-git_install_from_source_force_update: true
 git_version: "2.21.0"
 
 # mysql role settings -- installs mariaDB on RedHat Family
@@ -25,7 +23,6 @@ mysql_databases:
     - name: general
 mysql_users:
     - name: general
-      host: "127.0.0.1"
       password: mmekut2019
       priv: "general.*:ALL"
 
@@ -35,9 +32,8 @@ postgresql_version: "9.6"
 postgresql_databases:
     - name: general
 postgresql_users:
-    - name: mme
+    - name: mmekut 
       password: mmekut2019
-
 
 
 # LetsEncrypt doesn't generate cert for local private domains
@@ -61,8 +57,8 @@ apache_vhosts_ssl:
 # 'serveradmin, serveralias, allow_override, options, extra_parameters'.
   - servername: "fadinggiant.local"
     documentroot: "/var/www/fading"
-    certificate_file: "/etc/ssl/fadinggiant/chain.crt"
-    certificate_key_file: "/etc/ssl/fadinggiant/private.pem"
+    certificate_file: "/etc/pki/tls/fadinggiant/chain.crt"
+    certificate_key_file: "/etc/pki/tls/fadinggiant/private.pem"
 #   # Optional.
 #   certificate_chain_file: "/path/to/certificate_chain.crt"
 
