@@ -36,7 +36,7 @@ postgresql_users:
       password: mmekut2019
 
 
-# LetsEncrypt doesn't generate cert for local private domains
+# LetsEncrypt doesn't generate cert for local/private domains
 # So OpenSSL self-signed is used
   
   
@@ -47,10 +47,8 @@ apache_vhosts:
   # Additional properties:
   # 'serveradmin, serveralias, allow_override, options, extra_parameters'.
   - servername: "fadinggiant.local"
-    documentroot: "/var/www/fading"
     extra_parameters: |
-          RewriteCond %{HTTPS} off
-          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+          Redirect permanent "/" "https://fadinggiant.local/"
 
 apache_vhosts_ssl:
 # Additional properties:
