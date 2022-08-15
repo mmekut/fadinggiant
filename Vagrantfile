@@ -5,22 +5,24 @@
 
 Vagrant.configure("2") do |config|
 
-    config.vm.define "centOS" do |c|
-        
+    config.vm.define "Alma" do |c|
+        # Unfortunately CentOS has been decapitated by RedHat
+        # Almalinux becomes an alternative
         c.vm.provider :virtualbox do |v|
-            v.name = "centOS"
+            v.name = "AlmaBox"
             v.customize [
                 "modifyvm", :id,
-                "--name", "centOS",
+                "--name", "AlmaBox",
                 "--memory", 1024,
-                "--natdnshostresolver1", "on",
                 "--cpus", 1,
+                #"--cpu-profile", "host",
+                "--natdnshostresolver1", "on"
             ]
         end
         
         # Will download box from vagrant cloud...
         #...if it hasn't been downloaded manually
-        c.vm.box = "centos/7"
+        c.vm.box = "almalinux/8"
         
         # Sets VM boot timeouts
         # Vagrant will timeout if VM takes longer than this value to
@@ -33,17 +35,24 @@ Vagrant.configure("2") do |config|
         
         #Installs ansible locally and provisions inside the VM
         c.vm.provision "ansible_local" do |ansible|
+            # playbook n requirement details
             ansible.playbook = "ansible/playbook.yml"
-            ansible.inventory_path = "ansible/inventories/dev"
             ansible.galaxy_role_file = 'ansible/requirements.yml'
            
             ansible.galaxy_roles_path = '/vagrant/ansible/roles'
-            ansible.galaxy_command = 'sudo ansible-galaxy install --role-file=%{role_file} --roles-path=%{roles_path}'
+
+            # Galaxy command installs collections n roles
+            ansible.galaxy_command = "sudo ansible-galaxy install -r %{role_file}"
+            # ansible 2.12 says collection n roles in one file can be installed with..
+            # ..ansible-galaxy install -r %{role_file}
+
+            # collection installation style from github.com/hashicorp/vagrant/issues/10958
+            # sudo ansible-galaxy collection install -r %{role_file} && sudo ansible-galaxy install -r %{role_file} -p %{roles_path}
         end
         
-        # Syncronized folders in host and guest
-        # Permission issues dealt with me --- 4 4-months
+        # Comment out before/during provisioning to avoid mount errors when booting VM --- only mounts when Apache is installed
+        # Permission issues dealt with me for --- 4-months
         c.vm.synced_folder "www", "/var/www/fading",
-        owner: "apache", group: "apache", mount_options: ["dmode=775", "fmode=664"]
+        owner: "vagrant", group: "apache", mount_options: ["dmode=770", "fmode=750"]
     end
 end
