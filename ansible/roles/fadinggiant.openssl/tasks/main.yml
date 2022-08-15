@@ -1,33 +1,48 @@
 # Generate self-signed OpenSSL certificate 
 ---
-- name: Ensure directory exists for local self-signed TLS certs
-  file:
-    path: /etc/ssl/{{ certificate.host }}
+- name: Create directory for local self-signed TLS certs
+  ansible.builtin.file:
+    path: /etc/pki/tls/{{ certificate.host }}
     state: directory
-    mode: 0644
+    mode: '0750'
 
 - name: Generate an OpenSSL private key
-  openssl_privatekey:
-    path: /etc/ssl/{{ certificate.host }}/private.pem
+  community.crypto.openssl_privatekey:
+    path: /etc/pki/tls/{{ certificate.host }}/private.pem
+    size: 2048
+    type: ECC
+    curve: secp384r1
 
 - name: Generate an OpenSSL CSR
-  openssl_csr:
-    path: /etc/ssl/{{ certificate.host }}/{{ certificate.host }}.csr
-    privatekey_path: /etc/ssl/{{ certificate.host }}/private.pem
+  community.crypto.openssl_csr:
+    path: /etc/pki/tls/{{ certificate.host }}/{{ certificate.host }}.csr
+    privatekey_path: /etc/pki/tls/{{ certificate.host }}/private.pem
     common_name: "{{ certificate.domain }}"
     organization_name: OPEN MIND
     country_name: NG
+    create_subject_key_identifier: yes
     #ocsp_must_staple: yes
 
 - name: Generate a Self Signed OpenSSL certificate
-  openssl_certificate:
-    path: /etc/ssl/{{ certificate.host }}/chain.crt
-    privatekey_path: /etc/ssl/{{ certificate.host }}/private.pem
-    csr_path: /etc/ssl/{{ certificate.host }}/{{ certificate.host }}.csr
+  community.crypto.x509_certificate:
+    path: /etc/pki/tls/{{ certificate.host }}/chain.crt
+    privatekey_path: /etc/pki/tls/{{ certificate.host }}/private.pem
+    csr_path: /etc/pki/tls/{{ certificate.host }}/{{ certificate.host }}.csr
     provider: selfsigned
     selfsigned_not_after: "+365d"
     
 - name: Generate Diffie-Hellman parameters with 2048 bits
-  openssl_dhparam:
-    path: /etc/ssl/{{ certificate.host }}/dhparams.pem
+  community.crypto.openssl_dhparam:
+    path: /etc/pki/tls/{{ certificate.host }}/dhparams.pem
     size: 2048
+
+#- name: Generate SSH key pair
+#  ansible.builtin.command: ssh-keygen -P {{server.ssh}} -t ecdsa -b 384
+#  become_user: vagrant
+
+- name: Generate an OpenSSH keypair
+  community.crypto.openssh_keypair:
+    path: /etc/ssh/id
+    type: ecdsa
+    size: 384
+  # become_user: vagrant
