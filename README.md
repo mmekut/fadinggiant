@@ -1,32 +1,29 @@
 # fadinggiant
-LAMP Server VM
+Local Development VM
 
-A Virtual Machine with LAMP Server for development and testing built using Hashicorp Vagrant, Oracle Virtualbox (VM tool) and fully provisioned with Ansible orchestration software from RedHat.
+A Virtual Machine with LAMP support for development and testing built using Hashicorp Vagrant, Oracle Virtualbox and fully provisioned with Ansible automation Tool.
 
-The VM builds with CentOS 7 official box from vagrant cloud and installs the following softwares:
+The VM is built with AlmaLinux 8 official box from vagrant cloud and configures the following server packages:
 
 - Apache HTTP Server 2.4.x (with self-signed OpenSSL certificate)
-- Mariadb
-- PHP 7.3.x
-- Nodejs
-- Postgresql Server 9.x
-- Redis Server 
+- MariaDB 10.6
+- PHP 8.1.x
+- Nodejs v16
+- Postgresql Server 13.x
+- Redis
 - Memcached Instance
-- NPM
 - Composer (available globally)
-- Drush
 - Adminer
 
+NOTE: CentOS 8 has been decapitated by RedHat so we moved to the closest RHEL variant that is stable.
 
-The VM is designed primarily for PHP 7 development but installs latest perl, nodejs, ruby and python2 interpreters as well as gcc/make tools for development in other languages.
-
-
+The VM is designed primarily for PHP development but contains perl, nodejs and python3 interpreters as well as gcc/make tools.
 
 BASIC REQUIREMENTS
 
-To run this VM, your pc must be on Windows 7 SP1 (64-bit --- though i run mine on 32-bit but it is not advisable) with powershell 3.0 and above, Windows 8.1 and Windows 10.
+To run this VM, your PC must be on Windows 7 SP1 (64-bit --- though i run mine on 32-bit but it is not advisable) with powershell 3.0+, Windows 8.1 and Windows 10.
 
-Your pc must be connected to a power supply and broadband internet before firing up the machine.
+Your PC must be connected to a power supply and stable internet connection before firing up the machine.
 
 It is highly recommended to peruse the vagrant doc at vagrantup.com/docs if you are new to vagrant and virtualization.
 
@@ -35,7 +32,7 @@ SET-UP
 
 - Download and install latest Vagrant.
 - Download and install latest Virtualbox (applicable to your pc architecture).
-- Open powershell and use 'vagrant box add centos/7' command to download centos/7 box from Hashicorp cloud. 
+- Open powershell and use 'vagrant box add almalinux/8' command to download vagrant box.
 - Clone this repo to your preferred directory OR download the zip file and unzip to your preferred directory.
 - Restart your system.
 - Open powershell, run cd to the root directory of the project and use 'vagrant status' command to see if vagrant and virtualbox is installed successfully.
@@ -48,7 +45,7 @@ CONFIGURATION
 
 To customize the VM configuration, open the vagrantfile and modify its content before running vagrant up command.
 
-Ansible roles variables are found in ansible/var/all.yml. If you want to install/configure any services not included with this package, kindly look for ansible roles that performs such function on Ansible Galaxy and edit requirements.yml and playbook.yml found in ansible folder. Don't change anything you don't understand. Visit ansible docs when in doubt.
+Ansible roles variables are found in ansible/var/all.yml. If you want to install/configure any services not included with this package, kindly look for ansible roles that configure such services on Ansible Galaxy and edit requirements.yml and playbook.yml found in ansible folder. Don't change anything you don't understand. Visit ansible docs when in doubt.
 
 Always use the relevant docs before starting this VM OR you can use the issue queue to ask questions for clarification.
 
