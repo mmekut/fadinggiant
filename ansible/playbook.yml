@@ -4,6 +4,7 @@
   vars_files:
     - vars/all.yml
   roles:
+    - geerlingguy.repo-epel
     - geerlingguy.repo-remi
     - geerlingguy.pip
     - fadinggiant.config
@@ -16,9 +17,8 @@
     - fadinggiant.openssl
     - geerlingguy.apache
     - geerlingguy.php
-    - geerlingguy.php-xdebug
+    - geerlingguy.apache-php-fpm
     - geerlingguy.composer
-    - geerlingguy.drush
     - geerlingguy.adminer
     - geerlingguy.security
     - geerlingguy.firewall
