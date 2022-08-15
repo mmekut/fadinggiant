@@ -1,39 +1,47 @@
 ---
 # Server Utilities
 server:
-    packages: [vim, htop, wget, iotop, curl, bash-completion, libselinux-python]
+    packages: [vim, htop, wget, iotop, curl, p7zip, bash-completion, boost-program-options]
     timezone: Africa/Lagos
     locale: en_US.utf8
     hostname: fadingGiant
+    ssh: #ssh key passphrase
 
 
 # pip packages for OpenSSL cert generation
+pip_executable: pip3.8 # python setup on almalinux is messed up
 pip_install_packages:
     - name: pyOpenSSL
     - name: cryptography
+    - name: PyMySQL
 
 
 # Install git from source
-git_version: "2.21.0"
+git_version: "2.35.0"
+
+#
+nodejs_version: "18.x"
 
 # mysql role settings -- installs mariaDB on RedHat Family
-mysql_enablerepo: "epel"
-mysql_root_password: TOTALELFFINA
+mysql_enablerepo: "mariaDB"
+mysql_root_password: r@@t
+# mysql_pid_file: /var/tmp/mariadb/mariadb.pid
+# mysql_log_error: /var/tmp/mariadb/mariadb.log
 mysql_databases:
     - name: general
 mysql_users:
     - name: general
-      password: mmekut2019
+      password: mme@2022
       priv: "general.*:ALL"
 
 # postgresql role settings
-postgresql_enablerepo: "epel"
-postgresql_version: "9.6"
+postgresql_enablerepo: "postgres13"
+postgresql_service_enabled: false
 postgresql_databases:
     - name: general
 postgresql_users:
-    - name: mmekut 
-      password: mmekut2019
+    - name: mmekut
+      password: Mme2022@@
 
 
 # LetsEncrypt doesn't generate cert for local/private domains
@@ -48,7 +56,7 @@ apache_vhosts:
   # 'serveradmin, serveralias, allow_override, options, extra_parameters'.
   - servername: "fadinggiant.local"
     extra_parameters: |
-          Redirect permanent "/" "https://fadinggiant.local/"
+        Redirect permanent "/" "https://fadinggiant.local/"
 
 apache_vhosts_ssl:
 # Additional properties:
@@ -57,48 +65,49 @@ apache_vhosts_ssl:
     documentroot: "/var/www/fading"
     certificate_file: "/etc/pki/tls/fadinggiant/chain.crt"
     certificate_key_file: "/etc/pki/tls/fadinggiant/private.pem"
+    extra_parameters: |
+        ProxyPassMatch ^/(.*\.php(/.*)?)$ "unix:/var/run/php-fpm.sock|fcgi://localhost/var/www/fading"
 #   # Optional.
 #   certificate_chain_file: "/path/to/certificate_chain.crt"
 
 
 # php role settings
-php_enablerepo: "remi-php73"
-php_upload_max_filesize: "256M"
-php_post_max_size: "96M"
+php_enablerepo: "remi-8.1,remi-php81,epel"
+# php_upload_max_filesize: "256M"
+php_post_max_size: "64M"
 php_date_timezone: "Africa/Lagos"
 php_display_errors: "On"
+php_enable_php_fpm: true
+php_fpm_pm_max_children: 10
+php_fpm_pm_start_servers: 2
+php_fpm_pm_min_spare_servers: 2
+php_fpm_listen: "/var/run/php-fpm.sock"
 php_packages_extra:
         - php-intl
         - php-json
-        - php-curl
-        - php-geoip
-        - php-memcached
-        - php-mysql
+        - php-curl        
         - php-pgsql
         - php-openssl
-        - php-redis
-        - php-imagick
-        - php-exif
-        - php-yaml
-        - php-taint
-        - php-oauth
-        - php-litespeed #<--- LSAPI from remi-repo
+        - php-pecl-zip
+        - php-pecl-rar
+        - php-phpiredis
+        - php-pecl-yaml
+        - php-pecl-uuid
+        - php-pecl-oauth
+        - php-pecl-geoip
+        - php-pecl-imagick
+        - php-pecl-memcached
+        - php-pecl-uploadprogress
+        # php-pecl-taint --- not available on PHP 8
+        # php-litespeed #<--- LSAPI from remi-repo
 
 #adminer role settings
-adminer_install_dir: /var/www/adminer
+adminer_install_dir: /var/www/fading/adminer
 adminer_add_apache_config: true
 
-#Xdebug role settings
-php_xdebug_version: 2.7.1
-php_xdebug_remote_enable: "true"
-
-#composer variables
-composer_global_packages:
-    - { name: phpunit/phpunit, release: "8.*" }
-    
-#drush variables
-drush_launcher_install: false
-drush_composer_global_install: true
+# composer variables --- composer shouldn't run as root
+# composer_global_packages:
+#    - { name: phpunit/phpunit, release: "8.*" }
 
 #security role
 security_sudoers_passwordless:
